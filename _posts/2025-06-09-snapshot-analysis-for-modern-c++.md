@@ -284,9 +284,9 @@ There is also a lot of information that can be used when comparing two snapshots
 * Which types have the most allocation churn (different addresses than previous snapshot)
 * If we see an allocation change from used to leaked, we may find the last owner and the type of content.
 
-The current implementation can be found as a standalone nodejs binary *cdx.js* at https://github.com/core-explorer/core-explorer/ or you can run it in your browser without download at https://core-explorer.github.io/core-explorer/.
+The current implementation can be found as a standalone nodejs binary *cdx.js* at [https://github.com/core-explorer/core-explorer/](https://github.com/core-explorer/core-explorer/) or you can run it in your browser without download at [https://core-explorer.github.io/core-explorer/](https://core-explorer.github.io/core-explorer/).
 
-I have example core dumps at https://github.com/core-explorer/binary-samples
+I have example core dumps at [https://github.com/core-explorer/binary-samples](https://github.com/core-explorer/binary-samples)
 
 * [Invalid pointer derefence](https://core-explorer.github.io/core-explorer/index-st.html?download=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm/PointerExample.gdb.core&download1=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm/PointerExample)
 * [Calling a virtual function from a base class](https://core-explorer.github.io/core-explorer/index-st.html?download=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-noble/VirtualExample.gdb.core&download1=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-noble/VirtualExample)
@@ -297,9 +297,9 @@ If you build the examples yourself and have debug information for the C runtime 
 If you check out the pre-built examples, your experience will look like this
 
 Analysis requires binaries and debug information for all executables and shared libraries used in the core dump. You need to either specify a sysroot (with `--sysroot)` or a debuginfod server with (`--debuginfo-server`) so that the tool can find the missing information.
-Debian, Ubuntu and Fedora all run public debuginfod servers, and the elfutils project runs a debuginfod server at https://debuginfod.elfutils.org that will resolve to these as needed and can serve you debug information for all pre-built binaries from these distributions.
+Debian, Ubuntu and Fedora all run public debuginfod servers, and the elfutils project runs a debuginfod server at [https://debuginfod.elfutils.org](https://debuginfod.elfutils.org) that will resolve to these as needed and can serve you debug information for all pre-built binaries from these distributions.
 It will not serve the binaries themselves though. The information necessary for stack unwinding is contained in binaries not in debug information so it is really necessary to have the binaries as well as the debug information (in addition to needing them for decompiling or emulating functions).
 
-For that reason I run a custom debuginfod server at https://core-explorer.org that I stuffed with the glibc binaries needed for the analysis of my pre-built examples.
+For that reason I run a custom debuginfod server at [https://core-explorer.org](https://core-explorer.org) that I stuffed with the glibc binaries needed for the analysis of my pre-built examples.
 
 ![cdx analyze no debug](/blog/assets/images/analyze_no_dbg.png) 
