@@ -35,8 +35,7 @@ Now, that _purely hypothetical_ application is fucked beyond repair, but it turn
 ## Step 1: Object Discovery ##
 Let's try to get a list of all C++ objects in a core dump.
 The obvious starting point is to use debug information to find all global variables and their types.
-I like follow G. Polya's advice on problem-solving: "When faced with a hard problem you can't solve, find a related easier problem that you cannot solve".
-No need to make this harder than it already is, let's assume all global constructors have finished running and no global destructors have started running.
+Let's assume all global constructors have finished running and no global destructors have started running, that means all global variables are (supposed to be) in a valid state, we know their types and addresses.
 
 Finding all local variables is a bit more involved as you have to do manual stack unwinding, but is doable in principle.
 Some those variables might be optimized away, but memory-owning objects like containers won't be. If it has a non-trivial destructor there is good chance that it won't be optimized away completely, sliced into discontinuous pieces, reside partially in registers or suffer from any of the other status effects an optimizing compiler could inflict.
@@ -254,7 +253,7 @@ When I am debugging a hard to reproduce bug, I need multiple triggers for a comp
 * There might be several intermediate steps involved that propagate invalid data but will not crash themselves
 * There is now an automated way to search memory snapshots for evidence of memory corruption
 * We can also search for evidence of type confusion, which happens when pointers of different types point to the same memory area.
-* We can search for use-after-free hazards, when objects on the heap or in other threads' stacks point to an object om the current thread's stack
+* We can search for use-after-free hazards, when objects on the heap or in other threads' stacks point to an object on the current thread's stack
 * We can define our own methods to implement checks for invariants, even if the standard does not provide them
 
 I see plenty of potential when combined with another feature that is also not commonly implemented despite being technically feasible:
@@ -276,7 +275,7 @@ If we use the heuristic used by conservative garbage collectors that every value
 
 I have implemented allocation recovery for GNU libc malloc used on GNU/Linux, the next malloc implementation I want to look at is jemalloc, which is used by FreeBSD but also as a standalone malloc implementation.
 
-My current implementation can find memory leaks for objects that are truly unreachable, but it does not yet identify connected components that are unreachable from local and global varaibles. I only check for what valgrind considers _definite_ memory leaks, there is also the concept of _possible_ memory leaks, which is when there is no pointer to the beginning of an allocation, but there still are pointers into the allocation with a non-zero offset.
+My current implementation can find memory leaks for objects that are truly unreachable, but it does not yet identify connected components that are unreachable from local and global variables. I only check for what valgrind considers _definite_ memory leaks, there is also the concept of _possible_ memory leaks, which is when there is no pointer to the beginning of an allocation, but there still are pointers into the allocation with a non-zero offset.
 
 There is also a lot of information that can be used when comparing two snapshots of the same process:
 * Did the number of allocations or objects go up? Is it limited to a particular allocation size or type?
