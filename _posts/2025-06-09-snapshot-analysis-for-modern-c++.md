@@ -75,7 +75,9 @@ If we have a variable of type `std::vector<T>`, the debug information provides y
 
 You can use the `readelf` tool with the option `--debug-dump=info` if you have not looked at raw DWARF debug information before
 ![std::vector begin](/blog/assets/images/vector_begin_debug.png) 
-Here is the thing:
+
+
+The following things work to our advantage:
 * all containers in the standard libray provide this information,
 * all containers from other libraries also adhere to this interface because it is required for ranged for loops,
 * the iterators of standard libray containers are extremely simple, they usually just wrap one pointer,
@@ -286,8 +288,18 @@ The current implementation can be found as a standalone nodejs binary *cdx.js* a
 
 I have example core dumps at https://github.com/core-explorer/binary-samples
 
-*  [Invalid pointer derefence](https://core-explorer.github.io/core-explorer/index-st.html?download=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm/PointerExample.gdb.core&download1=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm/PointerExample)
+* [Invalid pointer derefence](https://core-explorer.github.io/core-explorer/index-st.html?download=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm/PointerExample.gdb.core&download1=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm/PointerExample)
 * [Calling a virtual function from a base class](https://core-explorer.github.io/core-explorer/index-st.html?download=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-noble/VirtualExample.gdb.core&download1=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-noble/VirtualExample)
 * [leaking memory](https://core-explorer.github.io/core-explorer/index-st.html?download=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm-clang/NewExample.gdb.core&download1=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-bookworm-clang/NewExample)
 * [Corrupting malloc metadata](https://core-explorer.github.io/core-explorer/index-st.html?download=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-noble/VectorExample.gdb.core&download1=https://core-explorer.github.io/binary-samples/cpp-examples/x86_64-Debug-noble/VectorExample)
 
+If you build the examples yourself and have debug information for the C runtime library installed locally, analysis should just work.
+If you check out the pre-built examples, your experience will look like this
+
+Analysis requires binaries and debug information for all executables and shared libraries used in the core dump. You need to either specify a sysroot (with `--sysroot)` or a debuginfod server with (`--debuginfo-server`) so that the tool can find the missing information.
+Debian, Ubuntu and Fedora all run public debuginfod servers, and the elfutils project runs a debuginfod server at https://debuginfod.elfutils.org that will resolve to these as needed and can serve you debug information for all pre-built binaries from these distributions.
+It will not serve the binaries themselves though. The information necessary for stack unwinding is contained in binaries not in debug information so it is really necessary to have the binaries as well as the debug information (in addition to needing them for decompiling or emulating functions).
+
+For that reason I run a custom debuginfod server at https://core-explorer.org that I stuffed with the glibc binaries needed for the analysis of my pre-built examples.
+
+![cdx analyze no debug](/blog/assets/images/analyze_no_dbg.png) 
