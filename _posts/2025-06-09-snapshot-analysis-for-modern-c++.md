@@ -74,7 +74,7 @@ If we have a variable of type `std::vector<T>`, the debug information provides y
 * we can look up all of these functions in the binary and see their implementation in machine code
 
 You can use the `readelf` tool with the option `--debug-dump=info` if you have not looked at raw DWARF debug information before
-![std::vector begin](vector_begin_debug.png) 
+![std::vector begin](/blog/assets/images/vector_begin_debug.png) 
 Here is the thing:
 * all containers in the standard libray provide this information,
 * all containers from other libraries also adhere to this interface because it is required for ranged for loops,
@@ -84,7 +84,7 @@ Here is the thing:
 * `operator++` will either increment the stored pointer (vector, string, span) or follow it to the next element (std::forward_list, std::list, sets and maps).
 
 Here is the disassembly for `std::vector::begin` in an unoptimized build, an optimized build would inline the entire function into a single instruction
-![std::vector begin](vector_begin_disass.png)
+![std::vector begin](/blog/assets/images/vector_begin_disass.png)
 
 DWARF debug information has a powerful bytecode language to express computations, but it can only be used to desribe the location or value of variables, it cannot be used to tell a debugger what the effect of running a function would be.
 
@@ -224,7 +224,7 @@ There is one solution to all of this:
 5. The stdlibc++ and libc++ libraries are binary compatible between release builds and debug builds and across all variations of hardening
 6. Current debuggers and tools load all binaries contained in a core dump and their debug information and then stop. But we can just load more.
 6. We can look up the methods we need in the debug binaries, decompile them from there and apply them in the core dump from the release binary
-7. Create a new binary, a unit test for example, that implements a templated, free-standing `get_if` method for _CrappyTaggedUnion_ and free-standing `begin` and `end` _WeirdSparseContainer_
+7. Create a new binary, a unit test for example, that implements a templated, free-standing `get_if` method for _CrappyTaggedUnion_ and free-standing `begin` and `end` for _WeirdSparseContainer_
 8. Load a debug build for the binary and now the tool understands _CrappyTaggedUnion_ and _WeirdSparseContainer_
 9. We have effectively turned machine code+debug information into a tooling extension language for role the currently filled by Python pretty printers and Natvis XML.
 10. Which would be horrible to write by hand, but our favorite compilers can generate it for us from C++ code.
